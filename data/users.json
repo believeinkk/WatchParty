@@ -1,0 +1,38 @@
+[
+  {
+    "userId": "test_host_1",
+    "username": "Test Host",
+    "email": "testhost1@party.test",
+    "password": "$2b$10$DBiW1rLj3SYUPSJdmA0Yze/FtSjvFH.a/MyXo2e1i9M82Fan/8LFS",
+    "role": "Host",
+    "createdAt": "2026-10-29T16:51:05.133Z"
+  },
+  {
+    "userId": "sarah_walker",
+    "username": "Sarah Walker",
+    "email": "sarah@example.com",
+    "password": "$2b$10$TNl34CiHmHA5r2i3C.OHVOoy40xKjvQfnXQu3lyM0dT.AVxT/Ba9i",
+    "role": "Host",
+    "createdAt": "2026-10-29T16:53:49.615Z"
+  },
+  {
+    "userId": "krishna",
+    "username": "Krishna",
+    "email": "krishna@gmail.com",
+    "password": "$2b$10$1wgJ1ftUqnOdUJuKYWa4E.iZ/R9GKHo2JsDKkh9O/F7M7reCeUuTK",
+    "role": "Admin",
+    "createdAt": "2026-10-29T18:07:04.178Z"
+  },
+  {
+    "userId": "raja_ji",
+    "username": "raja ji",
+    "email": "raja@gmail.com",
+    "password": "$2b$10$Q/vFI74zjIqFgowePRLJP.ifzQhvSwOvOhgmW/CXtg0tivggdGI/m",
+    "role": "Admin",
+    "roomId": null,
+    "_id": "6ae39c8b761c711746cfd4bd",
+    "createdAt": "2026-10-29T19:20:43.590Z",
+    "updatedAt": "2026-10-29T19:20:43.590Z",
+    "__v": 0
+  }
+]
