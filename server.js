@@ -54,7 +54,7 @@ async function startServer() {
     });
 
     // 5. Let Next.js handle all other frontend pages and API routes
-    app.all('*', (req, res) => {
+    app.all('(.*)', (req, res) => {
       return handle(req, res);
     });
 
