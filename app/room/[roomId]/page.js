@@ -527,6 +527,29 @@ function RoomContent() {
       }
     };
 
+    // Connection lifecycle listeners
+    const onConnect = () => {
+      console.log('[Socket] Connected / Reconnected with ID:', socket.id);
+      socket.emit('join_room', {
+        roomId,
+        userId,
+        username,
+        bypassWaiting: true,
+      });
+    };
+
+    const onConnectError = (error) => {
+      console.error('[Socket] Connection error in room:', error?.message || error);
+    };
+
+    const onDisconnect = (reason) => {
+      console.warn('[Socket] Disconnected from room server:', reason);
+    };
+
+    socket.on('connect', onConnect);
+    socket.on('connect_error', onConnectError);
+    socket.on('disconnect', onDisconnect);
+
     socket.on('room_joined', onRoomJoined);
     socket.on('waiting_approval', onWaitingApproval);
     socket.on('join_approved', onJoinApproved);
@@ -558,6 +581,9 @@ function RoomContent() {
     socket.on('room_ended', onRoomTerminated);
 
     return () => {
+      socket.off('connect', onConnect);
+      socket.off('connect_error', onConnectError);
+      socket.off('disconnect', onDisconnect);
       socket.off('room_joined', onRoomJoined);
       socket.off('waiting_approval', onWaitingApproval);
       socket.off('join_approved', onJoinApproved);
