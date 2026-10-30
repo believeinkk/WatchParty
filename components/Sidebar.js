@@ -92,7 +92,7 @@ export default function Sidebar({
   };
 
   return (
-    <aside className="w-full lg:w-80 h-full flex flex-col bg-white/95 dark:bg-zinc-900/95 border-l border-zinc-200/80 dark:border-zinc-800/60 backdrop-blur-xl transition-colors duration-200 select-none">
+    <aside className="w-full lg:w-80 h-full flex flex-col bg-white/90 dark:bg-zinc-900/85 border border-zinc-200/80 dark:border-white/10 rounded-2xl sm:rounded-3xl shadow-2xl shadow-black/10 dark:shadow-black/50 backdrop-blur-xl transition-colors duration-200 select-none overflow-hidden">
       {/* Compact Header */}
       <div className="p-3 sm:p-4 border-b border-zinc-200/80 dark:border-zinc-800/60">
         {/* Top Header Row with Minimize Toggle */}

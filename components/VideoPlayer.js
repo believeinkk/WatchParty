@@ -62,6 +62,10 @@ export default function VideoPlayer({
     videoState?.videoId || (videoState?.url ? extractYouTubeID(videoState.url) : '');
   const hasVideo = Boolean(currentVideoId);
 
+  const isAdminRole = ['admin', 'host'].includes(userRole?.toLowerCase());
+  const isCoAdminRole = ['co-admin', 'mod', 'moderator'].includes(userRole?.toLowerCase());
+  const hasControlPermission = Boolean(canControl) || isAdminRole || isCoAdminRole;
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -446,10 +450,6 @@ export default function VideoPlayer({
   const progressPercent = duration > 0 ? (playedSeconds / duration) * 100 : 0;
   const bufferedPercent = duration > 0 ? Math.min(100, progressPercent + 5) : 0;
 
-  const isAdminRole = ['admin', 'host'].includes(userRole?.toLowerCase());
-  const isCoAdminRole = ['co-admin', 'mod', 'moderator'].includes(userRole?.toLowerCase());
-  const hasControlPermission = Boolean(canControl) || isAdminRole || isCoAdminRole;
-
   const VolumeIcon = muted || volume === 0 ? VolumeX : volume < 0.5 ? Volume1 : Volume2;
 
   if (!mounted) {
@@ -476,7 +476,7 @@ export default function VideoPlayer({
         <div className="absolute inset-0 w-full h-full overflow-hidden">
           {/* YouTube IFrame Mount Target */}
           <div
-            id={playerIdRef.current}
+            id="yt-player-embed"
             className="w-full h-full [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-0 pointer-events-auto"
           />
 

@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers";
+import TubesBackground from "@/components/TubesBackground";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,8 +25,10 @@ export default function RootLayout({ children }) {
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 transition-colors duration-200">
-        <Providers>{children}</Providers>
+      <body className="min-h-full flex flex-col bg-transparent text-zinc-900 dark:text-zinc-100 transition-colors duration-200">
+        <Providers>
+          <TubesBackground>{children}</TubesBackground>
+        </Providers>
       </body>
     </html>
   );

@@ -16,7 +16,7 @@ export default function ThemeToggle({ className = '' }) {
   if (!mounted) {
     return (
       <div
-        className={`w-9 h-9 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 ${className}`}
+        className={`w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-800/80 ${className}`}
         aria-hidden="true"
       />
     );
@@ -30,12 +30,14 @@ export default function ThemeToggle({ className = '' }) {
   };
 
   return (
-    <button
+    <motion.button
+      whileTap={{ scale: 0.92 }}
+      whileHover={{ scale: 1.05 }}
       type="button"
       onClick={toggleTheme}
       title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
       aria-label="Toggle display theme"
-      className={`relative p-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 transition-colors shadow-sm cursor-pointer group ${className}`}
+      className={`relative min-w-[40px] min-h-[40px] w-10 h-10 rounded-xl flex items-center justify-center bg-zinc-100 hover:bg-zinc-200/80 dark:bg-zinc-900/90 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800/80 transition-colors shadow-sm cursor-pointer group ${className}`}
     >
       <AnimatePresence mode="wait" initial={false}>
         {isDark ? (
@@ -62,6 +64,6 @@ export default function ThemeToggle({ className = '' }) {
           </motion.div>
         )}
       </AnimatePresence>
-    </button>
+    </motion.button>
   );
 }

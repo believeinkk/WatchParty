@@ -32,6 +32,7 @@ import { getSocket } from '@/lib/socket';
 import { extractYouTubeID } from '@/lib/youtube';
 import VideoPlayer from '@/components/VideoPlayer';
 import Sidebar from '@/components/Sidebar';
+import ParticipantList from '@/components/ParticipantList';
 import ShareLink from '@/components/ShareLink';
 import WaitingRoom from '@/components/WaitingRoom';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -823,7 +824,7 @@ function RoomContent() {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
-      className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col transition-colors duration-200"
+      className="min-h-screen bg-transparent text-zinc-900 dark:text-zinc-100 flex flex-col transition-colors duration-200"
     >
       {/* Toast Notification */}
       <AnimatePresence>
@@ -920,28 +921,31 @@ function RoomContent() {
       {/* Participant Request Video Modal */}
       <AnimatePresence>
         {isRequestModalOpen && (
-          <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-2xl"
+              initial={{ scale: 0.94, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.94, opacity: 0, y: 10 }}
+              transition={{ duration: 0.2 }}
+              className="w-full max-w-md bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/90 dark:border-zinc-800/80 rounded-3xl p-6 sm:p-7 shadow-2xl shadow-black/25 dark:shadow-black/60 backdrop-blur-2xl"
             >
               <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Film className="w-4 h-4 text-red-500" />
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 flex items-center justify-center">
+                    <Film className="w-4 h-4" />
+                  </div>
                   <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
                     Request a Video
                   </h3>
                 </div>
                 <button
                   onClick={() => setIsRequestModalOpen(false)}
-                  className="p-1 text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                  className="p-1.5 rounded-xl text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-4">
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-4 leading-relaxed">
                 Paste a YouTube link to request playback. The Admin or Co-Admin will receive your
                 request for approval.
               </p>
@@ -952,11 +956,11 @@ function RoomContent() {
                   onChange={(e) => setRequestUrlInput(e.target.value)}
                   placeholder="https://www.youtube.com/watch?v=..."
                   required
-                  className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-red-500"
+                  className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/10 transition-all"
                 />
                 <button
                   type="submit"
-                  className="w-full bg-red-600 hover:bg-red-500 text-white font-medium py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  className="w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-red-600/25 transition-all cursor-pointer active:scale-98"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>Submit Request</span>
@@ -970,15 +974,16 @@ function RoomContent() {
       {/* Phase 7: End Room for All Confirmation Modal (Admin only) */}
       <AnimatePresence>
         {isEndRoomModalOpen && (
-          <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-md bg-white dark:bg-zinc-900 border border-red-500/30 rounded-2xl p-6 shadow-2xl space-y-4"
+              initial={{ scale: 0.94, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.94, opacity: 0, y: 10 }}
+              transition={{ duration: 0.2 }}
+              className="w-full max-w-md bg-white/95 dark:bg-zinc-900/95 border border-red-500/35 rounded-3xl p-6 sm:p-7 shadow-2xl shadow-red-950/20 backdrop-blur-2xl space-y-4"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-red-600/10 border border-red-500/20 flex items-center justify-center text-red-600 shrink-0">
+                <div className="w-10 h-10 rounded-2xl bg-red-600/10 border border-red-500/20 flex items-center justify-center text-red-600 shrink-0">
                   <Power className="w-5 h-5" />
                 </div>
                 <div>
@@ -991,7 +996,7 @@ function RoomContent() {
                 </div>
               </div>
 
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-950 p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 leading-relaxed">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-950 p-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 leading-relaxed">
                 All connected participants will be immediately redirected to the Home page, the room will be deleted from the database, and active session memory will be wiped.
               </p>
 
@@ -1007,7 +1012,7 @@ function RoomContent() {
                   id="confirm-end-room-btn"
                   type="button"
                   onClick={handleEndRoom}
-                  className="px-4 py-2 text-xs font-bold text-white bg-red-600 hover:bg-red-500 rounded-xl shadow-lg shadow-red-600/30 transition-all cursor-pointer flex items-center gap-1.5 active:scale-95"
+                  className="px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 rounded-xl shadow-lg shadow-red-600/30 transition-all cursor-pointer flex items-center gap-1.5 active:scale-95"
                 >
                   <Power className="w-3.5 h-3.5" />
                   <span>End Room for All</span>
@@ -1056,7 +1061,7 @@ function RoomContent() {
           className="flex-1 p-2 sm:p-4 lg:p-6 flex flex-col justify-center min-w-0 transition-all overflow-y-auto"
         >
           {/* Synchronized Player with Floating Reactions Overlay */}
-          <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black border border-zinc-200/50 dark:border-zinc-800/60">
+          <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl shadow-black/40 dark:shadow-red-950/20 bg-black border border-zinc-200/80 dark:border-white/10 ring-1 ring-black/5 dark:ring-white/5">
             <VideoPlayer
               videoState={videoState}
               canControl={canControl}
@@ -1136,8 +1141,8 @@ function RoomContent() {
           </div>
         </motion.main>
 
-        {/* Desktop Sidebar (Screens >= lg): Animated Collapsible Panel */}
-        <div className="hidden lg:block h-full shrink-0">
+        {/* Desktop Sidebar (Screens >= lg): Animated Floating Collapsible Panel */}
+        <div className="hidden lg:flex flex-col justify-start h-full shrink-0 py-4 pr-4">
           <AnimatePresence initial={false}>
             {isSidebarOpen && (
               <motion.div
@@ -1146,7 +1151,7 @@ function RoomContent() {
                 initial="closed"
                 animate="open"
                 exit="closed"
-                className="overflow-hidden h-full shrink-0 border-l border-zinc-200 dark:border-zinc-800/80"
+                className="overflow-hidden h-[calc(100vh-5.5rem)] shrink-0"
               >
                 <Sidebar
                   roomId={roomId}

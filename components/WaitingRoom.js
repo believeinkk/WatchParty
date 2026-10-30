@@ -14,7 +14,7 @@ export default function WaitingRoom({
   const isRejected = status === 'rejected';
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col items-center justify-center p-6 relative overflow-hidden selection:bg-red-600 selection:text-white transition-colors duration-200">
+    <div className="min-h-screen bg-transparent text-zinc-900 dark:text-zinc-100 flex flex-col items-center justify-center p-6 relative overflow-hidden selection:bg-red-600 selection:text-white transition-colors duration-200">
       {/* Background Ambience */}
       <div
         className={`absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 blur-3xl pointer-events-none rounded-full transition-colors duration-700 ${
@@ -26,7 +26,7 @@ export default function WaitingRoom({
         initial={{ opacity: 0, scale: 0.95, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="w-full max-w-md bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-8 shadow-2xl backdrop-blur-2xl relative text-center"
+        className="w-full max-w-md bg-white/80 dark:bg-white/10 backdrop-blur-xl border border-zinc-200/80 dark:border-white/20 rounded-3xl p-8 shadow-2xl relative text-center"
       >
         {/* Animated Status Icon */}
         <div className="relative mx-auto mb-6 w-20 h-20 flex items-center justify-center">

@@ -141,7 +141,7 @@ export default function RoomNavbar({
               </span>
             </Link>
 
-            <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-800 hidden sm:block" />
+            <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-800 hidden md:block" />
 
             {/* Room ID Badge with Copy */}
             <div className="flex items-center gap-1.5">
@@ -163,7 +163,7 @@ export default function RoomNavbar({
               {/* Shareable Link Button */}
               <ShareLink
                 roomId={roomId}
-                className="hidden sm:inline-flex"
+                className="hidden md:inline-flex"
                 onCopied={(msg) => showNotification && showNotification(msg, 'success')}
               />
             </div>
@@ -263,7 +263,7 @@ export default function RoomNavbar({
                   type="button"
                   id="room-management-btn"
                   onClick={() => setIsManagementOpen((prev) => !prev)}
-                  className={`relative px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all cursor-pointer active:scale-95 ${
+                  className={`relative px-2 sm:px-2.5 md:px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all cursor-pointer active:scale-95 ${
                     isManagementOpen
                       ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 border-zinc-800 dark:border-white shadow-md'
                       : pendingRequests.length > 0
@@ -273,7 +273,7 @@ export default function RoomNavbar({
                   title="Professional Room Management & Admin Controls"
                 >
                   <SlidersHorizontal className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Manage</span>
+                  <span className="hidden md:inline">Manage</span>
                   <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${isManagementOpen ? 'rotate-180' : ''}`} />
 
                   {/* Pending Request Indicator Badge */}
@@ -445,8 +445,8 @@ export default function RoomNavbar({
               </div>
             )}
 
-            {/* 2. SIDEBAR TOGGLE CONTROLS (Chat & Participants) — Grouped Pill */}
-            <div className="hidden sm:flex items-center gap-0.5 bg-zinc-100/90 dark:bg-zinc-900/90 border border-zinc-200/80 dark:border-zinc-800/70 p-0.5 sm:p-1 rounded-xl">
+            {/* 2. SIDEBAR TOGGLE CONTROLS (Chat & Participants) — Grouped Pill (Desktop only) */}
+            <div className="hidden lg:flex items-center gap-0.5 bg-zinc-100/90 dark:bg-zinc-900/90 border border-zinc-200/80 dark:border-zinc-800/70 p-0.5 sm:p-1 rounded-xl">
               <button
                 type="button"
                 id="navbar-toggle-chat-btn"
@@ -509,7 +509,7 @@ export default function RoomNavbar({
             </div>
 
             {/* 3. THEME TOGGLE */}
-            <div className="hidden sm:block">
+            <div className="hidden md:block">
               <ThemeToggle />
             </div>
 
@@ -622,13 +622,67 @@ export default function RoomNavbar({
                       <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">
                         {username}
                       </p>
-                      <span className="text-[10px] text-zinc-500 dark:text-zinc-400">
-                        {isAdminRole ? 'Host (Admin)' : canControl ? 'Moderator' : 'Viewer'}
-                      </span>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        {isAdminRole ? (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25">
+                            <Crown className="w-2.5 h-2.5 text-amber-500" />
+                            Admin
+                          </span>
+                        ) : canControl ? (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/25">
+                            <Shield className="w-2.5 h-2.5 text-blue-500" />
+                            Co-Admin
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-zinc-100 dark:bg-white/5 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-white/10">
+                            <User className="w-2.5 h-2.5 text-zinc-400" />
+                            Viewer
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
                   <ThemeToggle />
+                </div>
+
+                {/* View Mode Tabs (Chat & Participants for Mobile/Tablet) */}
+                <div className="space-y-1.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                    Room Panels
+                  </span>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        toggleSidebarTab('chat');
+                        setIsMobileDrawerOpen(false);
+                      }}
+                      className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                        isSidebarOpen && sidebarTab === 'chat'
+                          ? 'bg-gradient-to-r from-red-600 to-rose-500 text-white border-red-500 shadow-sm'
+                          : 'bg-zinc-100 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'
+                      }`}
+                    >
+                      <MessageSquare className="w-3.5 h-3.5" />
+                      <span>Chat ({messages.length})</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        toggleSidebarTab('participants');
+                        setIsMobileDrawerOpen(false);
+                      }}
+                      className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                        isSidebarOpen && sidebarTab === 'participants'
+                          ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 border-zinc-800 dark:border-white shadow-sm'
+                          : 'bg-zinc-100 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'
+                      }`}
+                    >
+                      <Users className="w-3.5 h-3.5" />
+                      <span>People ({participants.length})</span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Live Sync Status Card */}
