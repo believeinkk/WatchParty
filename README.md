@@ -1,7 +1,7 @@
 # YouTube Watch Party
 
 A real-time, synchronized YouTube watch party web application built with Next.js, a custom Express server, Socket.io WebSockets, and MongoDB.
-
+Live Deployment Link : https://watchparty-96e5.onrender.com/
 ---
 
 ## Table of Contents
@@ -246,7 +246,7 @@ In the **Environment** section of your Render service, add:
 *(Note: Render automatically injects the `PORT` variable, and `server.js` automatically binds to `process.env.PORT`)*.
 
 ### Step 5: Deploy
-Click **Deploy Web Service**. Render will install dependencies, build the Next.js bundle, and launch `server.js`. Your synchronized Watch Party will be live at your custom Render URL (e.g., `https://youtube-watch-party.onrender.com`).
+Click **Deploy Web Service**. Render will install dependencies, build the Next.js bundle, and launch `server.js`. Your synchronized Watch Party will be live at your custom Render URL (e.g., `https://watchparty-96e5.onrender.com/`).
 
 ---
 
