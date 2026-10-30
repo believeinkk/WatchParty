@@ -46,5 +46,17 @@
     "createdAt": "2026-10-29T23:52:24.000Z",
     "updatedAt": "2026-10-29T23:52:24.000Z",
     "__v": 0
+  },
+  {
+    "userId": "test1",
+    "username": "Test",
+    "email": "test@gmail.com",
+    "password": "$2b$10$xagdN6PgPHX9Yb5gP8xsu.hiWTlmBAte06nD3oFKiH7CX9yrqsThW",
+    "role": "Admin",
+    "roomId": null,
+    "_id": "6ae3fe71b88be4ab0e6c4b98",
+    "createdAt": "2026-10-30T02:18:25.086Z",
+    "updatedAt": "2026-10-30T02:18:25.086Z",
+    "__v": 0
   }
 ]

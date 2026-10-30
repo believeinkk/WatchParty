@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Crown,
   Shield,
+  User,
   MoreVertical,
   UserMinus,
   ShieldCheck,
@@ -15,16 +16,15 @@ import {
 } from 'lucide-react';
 
 /**
- * Helper to render subtle, professional badges for 'Admin' and 'Co-Admin' next to their names.
- * Viewers do not need a badge.
+ * Helper to render modern, subtle badges for 'Admin', 'Co-Admin', and 'Viewer'.
  */
 export function getRoleBadge(role) {
   const normalized = role?.toLowerCase();
 
   if (normalized === 'admin' || normalized === 'host') {
     return (
-      <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 tracking-wide">
-        <Crown className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-500 shrink-0" />
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/25">
+        <Crown className="w-2.5 h-2.5 text-amber-500 shrink-0" />
         <span>Admin</span>
       </span>
     );
@@ -32,14 +32,19 @@ export function getRoleBadge(role) {
 
   if (normalized === 'co-admin' || normalized === 'mod' || normalized === 'moderator') {
     return (
-      <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 tracking-wide">
-        <Shield className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-blue-500 shrink-0" />
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/25">
+        <Shield className="w-2.5 h-2.5 text-blue-500 shrink-0" />
         <span>Co-Admin</span>
       </span>
     );
   }
 
-  return null;
+  return (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-wide bg-zinc-100 dark:bg-white/5 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-white/10">
+      <User className="w-2.5 h-2.5 text-zinc-400 shrink-0" />
+      <span>Viewer</span>
+    </span>
+  );
 }
 
 export default function ParticipantList({

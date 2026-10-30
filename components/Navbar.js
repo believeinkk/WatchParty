@@ -26,6 +26,7 @@ import {
   Check,
   Shield,
   ExternalLink,
+  Loader2,
 } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
 
@@ -39,6 +40,7 @@ export default function Navbar() {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [copiedUserId, setCopiedUserId] = useState(false);
+  const [isCreatingRoomNav, setIsCreatingRoomNav] = useState(false);
   const dropdownRef = useRef(null);
 
   // Track scroll for navbar background shift
@@ -86,15 +88,61 @@ export default function Navbar() {
     }
   };
 
-  const handleNavigateTab = (tab) => {
+  const handleCreateRoomNavbar = async () => {
+    setUserDropdownOpen(false);
+    setMobileMenuOpen(false);
+
+    if (!isAuthenticated) {
+      router.push('/login?callbackUrl=/#create&action=create_room');
+      return;
+    }
+
+    setIsCreatingRoomNav(true);
+    try {
+      const res = await fetch('/api/room/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await res.json();
+      const generatedRoomId = data.roomId;
+      const cleanUsername = session?.user?.name || 'Admin';
+      const userId =
+        session?.user?.id || 'admin_' + cleanUsername.toLowerCase().replace(/[^a-z0-9]/g, '_');
+
+      localStorage.setItem('watchparty_username', cleanUsername);
+      localStorage.setItem('watchparty_userId', userId);
+
+      router.push(
+        `/room/${encodeURIComponent(generatedRoomId)}?username=${encodeURIComponent(cleanUsername)}&role=Admin`
+      );
+    } catch (err) {
+      console.error('Navbar create room error:', err);
+      const fallbackId = Math.random().toString(36).substring(2, 9);
+      router.push(`/room/${fallbackId}?role=Admin`);
+    } finally {
+      setIsCreatingRoomNav(false);
+    }
+  };
+
+  const handleJoinPartyNavbar = () => {
     setUserDropdownOpen(false);
     setMobileMenuOpen(false);
     if (pathname === '/') {
-      window.location.hash = tab;
-      const el = document.getElementById('action-card');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      const inputEl = document.getElementById('room-id-input') || document.getElementById('action-card');
+      if (inputEl) {
+        inputEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        inputEl.focus?.();
+      }
     } else {
-      router.push(`/#${tab}`);
+      router.push('/#join');
+    }
+  };
+
+  const handleNavigateTab = (tab) => {
+    if (tab === 'create') {
+      handleCreateRoomNavbar();
+    } else {
+      handleJoinPartyNavbar();
     }
   };
 
@@ -157,16 +205,23 @@ export default function Navbar() {
           {isAuthenticated ? (
             <button
               type="button"
-              onClick={() => handleNavigateTab('create')}
-              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-500 hover:to-rose-400 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-red-600/20 transition-all cursor-pointer active:scale-95"
+              id="navbar-create-room-btn"
+              onClick={handleCreateRoomNavbar}
+              disabled={isCreatingRoomNav}
+              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-500 hover:to-rose-400 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-red-600/20 transition-all cursor-pointer active:scale-95 disabled:opacity-70"
             >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Create Room</span>
+              {isCreatingRoomNav ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Plus className="w-3.5 h-3.5" />
+              )}
+              <span>{isCreatingRoomNav ? 'Creating...' : 'Create Room'}</span>
             </button>
           ) : (
             <button
               type="button"
-              onClick={() => handleNavigateTab('join')}
+              id="navbar-join-party-btn"
+              onClick={handleJoinPartyNavbar}
               className="px-3.5 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <Users className="w-3.5 h-3.5 text-blue-500" />
@@ -254,11 +309,17 @@ export default function Navbar() {
                     <div className="space-y-0.5">
                       <button
                         type="button"
-                        onClick={() => handleNavigateTab('create')}
-                        className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                        id="profile-dropdown-create-btn"
+                        onClick={handleCreateRoomNavbar}
+                        disabled={isCreatingRoomNav}
+                        className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer disabled:opacity-70"
                       >
                         <span className="flex items-center gap-2">
-                          <Plus className="w-3.5 h-3.5 text-red-500" />
+                          {isCreatingRoomNav ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-red-500" />
+                          ) : (
+                            <Plus className="w-3.5 h-3.5 text-red-500" />
+                          )}
                           <span>Create Party Room</span>
                         </span>
                         <span className="text-[10px] text-zinc-400">Launch</span>
@@ -266,7 +327,8 @@ export default function Navbar() {
 
                       <button
                         type="button"
-                        onClick={() => handleNavigateTab('join')}
+                        id="profile-dropdown-join-btn"
+                        onClick={handleJoinPartyNavbar}
                         className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
                       >
                         <span className="flex items-center gap-2">
@@ -397,15 +459,22 @@ export default function Navbar() {
               <div className="grid grid-cols-2 gap-2 pt-1">
                 <button
                   type="button"
-                  onClick={() => handleNavigateTab('create')}
-                  className="py-2.5 text-center rounded-xl bg-gradient-to-r from-red-600 to-rose-500 text-xs font-bold text-white shadow-md shadow-red-600/20 flex items-center justify-center gap-1.5 cursor-pointer"
+                  id="mobile-drawer-create-btn"
+                  onClick={handleCreateRoomNavbar}
+                  disabled={isCreatingRoomNav}
+                  className="py-2.5 text-center rounded-xl bg-gradient-to-r from-red-600 to-rose-500 text-xs font-bold text-white shadow-md shadow-red-600/20 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-70"
                 >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Create Room</span>
+                  {isCreatingRoomNav ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Plus className="w-3.5 h-3.5" />
+                  )}
+                  <span>{isCreatingRoomNav ? 'Creating...' : 'Create Room'}</span>
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleNavigateTab('join')}
+                  id="mobile-drawer-join-btn"
+                  onClick={handleJoinPartyNavbar}
                   className="py-2.5 text-center rounded-xl bg-zinc-100 dark:bg-zinc-900 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-200/80 dark:border-zinc-800/60 flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Users className="w-3.5 h-3.5 text-blue-500" />

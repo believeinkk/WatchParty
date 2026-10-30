@@ -81,7 +81,7 @@ function LinkedinIcon(props) {
 
 export default function Footer() {
   return (
-    <footer className="border-t border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 text-xs transition-colors duration-200">
+    <footer className="border-t border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/60 dark:bg-zinc-950/60 backdrop-blur-md text-zinc-600 dark:text-zinc-400 text-xs transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12 mb-12">
           

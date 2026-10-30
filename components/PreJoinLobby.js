@@ -48,7 +48,7 @@ export default function PreJoinLobby({
     .toUpperCase();
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col justify-between relative overflow-hidden transition-colors duration-200">
+    <div className="min-h-screen bg-transparent text-zinc-900 dark:text-zinc-100 flex flex-col justify-between relative overflow-hidden transition-colors duration-200">
       {/* Background Decorative Lighting */}
       <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-red-600/10 dark:bg-red-600/15 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-rose-500/10 dark:bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -157,7 +157,7 @@ export default function PreJoinLobby({
             transition={{ duration: 0.4, delay: 0.1 }}
             className="lg:col-span-5"
           >
-            <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
+            <div className="bg-white/80 dark:bg-white/10 backdrop-blur-xl border border-zinc-200/80 dark:border-white/20 rounded-3xl p-6 sm:p-8 shadow-2xl">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs font-semibold mb-3">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Pre-Join Lobby</span>

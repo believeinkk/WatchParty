@@ -88,7 +88,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col selection:bg-red-600 selection:text-white transition-colors duration-200 relative">
+    <div className="min-h-screen bg-transparent text-zinc-900 dark:text-zinc-100 flex flex-col selection:bg-red-600 selection:text-white transition-colors duration-200 relative">
       {/* Success Toast */}
       <AnimatePresence>
         {status === 'success' && (
@@ -220,7 +220,7 @@ export default function ContactPage() {
               transition={{ duration: 0.4 }}
               className="lg:col-span-7"
             >
-              <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800/80 shadow-xl relative">
+              <div className="p-6 sm:p-8 rounded-3xl bg-white/80 dark:bg-white/10 backdrop-blur-md border border-zinc-200/80 dark:border-white/20 shadow-xl relative">
                 <AnimatePresence mode="wait">
                   {status === 'success' ? (
                     <motion.div

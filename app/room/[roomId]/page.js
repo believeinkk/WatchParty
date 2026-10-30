@@ -824,7 +824,7 @@ function RoomContent() {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
-      className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col transition-colors duration-200"
+      className="min-h-screen bg-transparent text-zinc-900 dark:text-zinc-100 flex flex-col transition-colors duration-200"
     >
       {/* Toast Notification */}
       <AnimatePresence>
@@ -1061,7 +1061,7 @@ function RoomContent() {
           className="flex-1 p-2 sm:p-4 lg:p-6 flex flex-col justify-center min-w-0 transition-all overflow-y-auto"
         >
           {/* Synchronized Player with Floating Reactions Overlay */}
-          <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black border border-zinc-200/50 dark:border-zinc-800/60">
+          <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl shadow-black/40 dark:shadow-red-950/20 bg-black border border-zinc-200/80 dark:border-white/10 ring-1 ring-black/5 dark:ring-white/5">
             <VideoPlayer
               videoState={videoState}
               canControl={canControl}
@@ -1141,8 +1141,8 @@ function RoomContent() {
           </div>
         </motion.main>
 
-        {/* Desktop Sidebar (Screens >= lg): Animated Collapsible Panel */}
-        <div className="hidden lg:block h-full shrink-0">
+        {/* Desktop Sidebar (Screens >= lg): Animated Floating Collapsible Panel */}
+        <div className="hidden lg:flex flex-col justify-start h-full shrink-0 py-4 pr-4">
           <AnimatePresence initial={false}>
             {isSidebarOpen && (
               <motion.div
@@ -1151,7 +1151,7 @@ function RoomContent() {
                 initial="closed"
                 animate="open"
                 exit="closed"
-                className="overflow-hidden h-full shrink-0 border-l border-zinc-200 dark:border-zinc-800/80"
+                className="overflow-hidden h-[calc(100vh-5.5rem)] shrink-0"
               >
                 <Sidebar
                   roomId={roomId}

@@ -36,7 +36,7 @@ export default function AboutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col selection:bg-red-600 selection:text-white transition-colors duration-200">
+    <div className="min-h-screen bg-transparent text-zinc-900 dark:text-zinc-100 flex flex-col selection:bg-red-600 selection:text-white transition-colors duration-200">
       <Navbar />
 
       <main className="flex-1">

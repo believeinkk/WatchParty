@@ -66,10 +66,10 @@ function ForgotPasswordForm() {
   return (
     <div className="w-full max-w-md mx-auto">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl p-7 sm:p-8 shadow-2xl backdrop-blur-xl relative"
+        initial={{ opacity: 0, y: 25, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.45, ease: 'easeOut' }}
+        className="bg-white/80 dark:bg-white/10 backdrop-blur-xl border border-zinc-200/80 dark:border-white/20 rounded-3xl p-7 sm:p-9 shadow-2xl shadow-black/10 dark:shadow-black/50 relative overflow-hidden"
       >
         {/* Header */}
         <div className="text-center mb-6">
@@ -212,7 +212,7 @@ function ForgotPasswordForm() {
 
 export default function ForgotPasswordPage() {
   return (
-    <main className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col items-center justify-center p-6 relative overflow-hidden transition-colors duration-200">
+    <main className="min-h-screen bg-transparent text-zinc-900 dark:text-zinc-100 flex flex-col items-center justify-center p-6 relative overflow-hidden transition-colors duration-200">
       <div className="absolute top-4 right-4 z-20">
         <ThemeToggle />
       </div>
