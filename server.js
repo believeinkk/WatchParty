@@ -7,7 +7,7 @@ const connectDB = require('./lib/db');
 
 // Set environment modes
 const dev = process.env.NODE_ENV !== 'production';
-const hostname = '0.0.0.0'; // Essential for Railway container proxy binding
+const hostname = '0.0.0.0'; // Essential for Railway / Render container proxy binding
 const port = parseInt(process.env.PORT || '3000', 10);
 
 // Initialize Next.js application instance
@@ -27,11 +27,23 @@ async function startServer() {
     const app = express();
     const server = http.createServer(app);
 
+    // Express CORS middleware to permit cross-origin requests
+    app.use((req, res, next) => {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+      res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,Authorization');
+      if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+      }
+      next();
+    });
+
     // 3. Setup Socket.io on the exact same HTTP server instance
+    // Configure CORS to accept connections from ANY origin during debugging/production
     const io = new Server(server, {
       cors: {
-        origin: '*',
-        methods: ['GET', 'POST'],
+        origin: "*",
+        methods: ["GET", "POST"],
       },
       transports: ['websocket', 'polling'],
     });
@@ -43,7 +55,7 @@ async function startServer() {
     // Make io accessible to Express route handlers if needed
     app.set('io', io);
 
-    // 4. API health check endpoint (Used by Railway deployment health checks)
+    // 4. API health check endpoint (Used by Render / Railway deployment health checks)
     app.get('/api/health', (req, res) => {
       res.json({
         status: 'online',
