@@ -50,9 +50,29 @@ export default function ContactPage() {
     setStatus('loading');
     setErrorMessage('');
 
-    // Simulate reliable dispatch
-    setTimeout(() => {
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          category: formData.category,
+          subject: formData.subject.trim(),
+          message: formData.message.trim(),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to submit inquiry. Please try again.');
+      }
+
       setStatus('success');
+      // Automatically clear all input fields
       setFormData({
         name: '',
         email: '',
@@ -60,11 +80,35 @@ export default function ContactPage() {
         subject: '',
         message: '',
       });
-    }, 900);
+    } catch (err) {
+      console.error('[Contact Error]:', err);
+      setErrorMessage(err.message || 'An unexpected error occurred. Please try again.');
+      setStatus('error');
+    }
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col selection:bg-red-600 selection:text-white transition-colors duration-200">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col selection:bg-red-600 selection:text-white transition-colors duration-200 relative">
+      {/* Success Toast */}
+      <AnimatePresence>
+        {status === 'success' && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            className="fixed top-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-2xl bg-zinc-900/95 dark:bg-zinc-900/95 border border-emerald-500/30 text-white shadow-2xl backdrop-blur-xl"
+          >
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-zinc-100">Message Sent Successfully!</p>
+              <p className="text-[11px] text-zinc-400">Saved to database. We will reply soon.</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <Navbar />
 
       <main className="flex-1">
@@ -307,7 +351,10 @@ export default function ContactPage() {
                         className="w-full py-3 rounded-xl bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-red-600/30 transition-all active:scale-[0.99] cursor-pointer"
                       >
                         {status === 'loading' ? (
-                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          <>
+                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            <span>Sending...</span>
+                          </>
                         ) : (
                           <>
                             <Send className="w-3.5 h-3.5" />

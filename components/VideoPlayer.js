@@ -208,7 +208,7 @@ export default function VideoPlayer({
 
                 // Phase 2 Task 4: Middle Click / Direct IFrame Play Detection
                 // If the Admin/Co-Admin clicked directly inside the YouTube frame to play
-                if (canControl && !isRemoteSyncRef.current && !videoState?.isPlaying) {
+                if (hasControlPermission && !isRemoteSyncRef.current && !videoState?.isPlaying) {
                   onPlay(currentTime);
                 }
               } else if (state === 2) {
@@ -217,7 +217,7 @@ export default function VideoPlayer({
 
                 // Phase 2 Task 4: Middle Click / Direct IFrame Pause Detection
                 // If the Admin/Co-Admin clicked directly inside the YouTube frame to pause
-                if (canControl && !isRemoteSyncRef.current && videoState?.isPlaying) {
+                if (hasControlPermission && !isRemoteSyncRef.current && videoState?.isPlaying) {
                   onPause(currentTime);
                 }
               } else if (state === 3) {
@@ -333,7 +333,7 @@ export default function VideoPlayer({
 
   // Play / Pause toggle from bottom controls bar
   const handlePlayPause = () => {
-    if (!canControl || !playerRef.current) return;
+    if (!hasControlPermission || !playerRef.current) return;
 
     const currentTime = playerRef.current.getCurrentTime?.() || playedSeconds;
 
@@ -353,7 +353,7 @@ export default function VideoPlayer({
 
   // Skip forward/back 10 seconds
   const handleSkip = (delta) => {
-    if (!canControl || !playerRef.current) return;
+    if (!hasControlPermission || !playerRef.current) return;
     const current = playerRef.current.getCurrentTime?.() || 0;
     const newTime = Math.max(0, Math.min(current + delta, duration));
     isInternalSeekingRef.current = true;
@@ -369,13 +369,13 @@ export default function VideoPlayer({
 
   // Scrubber seeking
   const handleSeekChange = (e) => {
-    if (!canControl) return;
+    if (!hasControlPermission) return;
     setSeeking(true);
     setPlayedSeconds(parseFloat(e.target.value));
   };
 
   const handleSeekEnd = (e) => {
-    if (!canControl || !playerRef.current) return;
+    if (!hasControlPermission || !playerRef.current) return;
     const target = parseFloat(e.target.value);
     setSeeking(false);
     isInternalSeekingRef.current = true;
@@ -448,6 +448,7 @@ export default function VideoPlayer({
 
   const isAdminRole = ['admin', 'host'].includes(userRole?.toLowerCase());
   const isCoAdminRole = ['co-admin', 'mod', 'moderator'].includes(userRole?.toLowerCase());
+  const hasControlPermission = Boolean(canControl) || isAdminRole || isCoAdminRole;
 
   const VolumeIcon = muted || volume === 0 ? VolumeX : volume < 0.5 ? Volume1 : Volume2;
 
@@ -515,7 +516,7 @@ export default function VideoPlayer({
           </AnimatePresence>
 
           {/* Transparent Overlay for non-controllers (Viewers) to prevent desync clicks */}
-          {!canControl && (
+          {!hasControlPermission && (
             <div
               className="absolute inset-0 z-10 cursor-not-allowed"
               title="Playback is synchronized by Admin / Co-Admin"
@@ -535,7 +536,7 @@ export default function VideoPlayer({
             </div>
             <h3 className="text-lg sm:text-xl font-bold text-zinc-200 mb-2">No Video Loaded</h3>
             <p className="text-xs sm:text-sm text-zinc-500 max-w-xs leading-relaxed">
-              {canControl
+              {hasControlPermission
                 ? 'Paste a YouTube video link above to start the watch party for everyone.'
                 : 'Waiting for the Admin to choose a video to watch.'}
             </p>
@@ -623,7 +624,7 @@ export default function VideoPlayer({
         >
           {/* Hover Time Preview */}
           <AnimatePresence>
-            {hoverTime !== null && canControl && (
+            {hoverTime !== null && hasControlPermission && (
               <motion.div
                 initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -662,15 +663,15 @@ export default function VideoPlayer({
             onChange={handleSeekChange}
             onMouseUp={handleSeekEnd}
             onTouchEnd={handleSeekEnd}
-            disabled={!canControl || !hasVideo}
+            disabled={!hasControlPermission || !hasVideo}
             className={`absolute inset-0 w-full h-full opacity-0 cursor-pointer touch-none ${
-              !canControl ? 'cursor-not-allowed' : ''
+              !hasControlPermission ? 'cursor-not-allowed' : ''
             }`}
             style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
           />
 
           {/* Scrubber Knob */}
-          {canControl && hasVideo && (
+          {hasControlPermission && hasVideo && (
             <div
               className="absolute top-1/2 -translate-y-1/2 w-3 h-3 sm:w-3.5 sm:h-3.5 bg-red-500 rounded-full shadow-lg shadow-red-500/50 border-2 border-white opacity-0 group-hover/scrubber:opacity-100 transition-opacity pointer-events-none"
               style={{ left: `${progressPercent}%`, transform: 'translate(-50%, -50%)' }}
@@ -685,14 +686,14 @@ export default function VideoPlayer({
             {/* Play/Pause */}
             <button
               onClick={handlePlayPause}
-              disabled={!canControl || !hasVideo}
+              disabled={!hasControlPermission || !hasVideo}
               className={`p-2 sm:p-2.5 rounded-xl transition-all ${
-                !canControl
+                !hasControlPermission
                   ? 'opacity-30 cursor-not-allowed text-white/50'
                   : 'cursor-pointer text-white hover:bg-white/10 hover:scale-105 active:scale-95'
               }`}
               title={
-                !canControl
+                !hasControlPermission
                   ? 'Only Admin / Co-Admin can control playback'
                   : videoState?.isPlaying
                   ? 'Pause'
@@ -709,9 +710,9 @@ export default function VideoPlayer({
             {/* Skip Back 10s */}
             <button
               onClick={() => handleSkip(-10)}
-              disabled={!canControl || !hasVideo}
+              disabled={!hasControlPermission || !hasVideo}
               className={`p-1.5 sm:p-2 rounded-lg transition-all hidden sm:flex ${
-                !canControl ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer text-zinc-400 hover:text-white hover:bg-white/10'
+                !hasControlPermission ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer text-zinc-400 hover:text-white hover:bg-white/10'
               }`}
               title="Rewind 10s"
             >
@@ -721,9 +722,9 @@ export default function VideoPlayer({
             {/* Skip Forward 10s */}
             <button
               onClick={() => handleSkip(10)}
-              disabled={!canControl || !hasVideo}
+              disabled={!hasControlPermission || !hasVideo}
               className={`p-1.5 sm:p-2 rounded-lg transition-all hidden sm:flex ${
-                !canControl ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer text-zinc-400 hover:text-white hover:bg-white/10'
+                !hasControlPermission ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer text-zinc-400 hover:text-white hover:bg-white/10'
               }`}
               title="Forward 10s"
             >

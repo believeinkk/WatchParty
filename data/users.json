@@ -34,5 +34,17 @@
     "createdAt": "2026-10-29T19:20:43.590Z",
     "updatedAt": "2026-10-29T19:20:43.590Z",
     "__v": 0
+  },
+  {
+    "userId": "pra",
+    "username": "pr",
+    "email": "pr@gmail.com",
+    "password": "$2b$10$Sfvjett68y9OkiHCs8GmeeYYd73N4pk4I41H4b6wH94KwBLO5USOi",
+    "role": "Admin",
+    "roomId": null,
+    "_id": "6ae3dc378994761f10b6c162",
+    "createdAt": "2026-10-29T23:52:24.000Z",
+    "updatedAt": "2026-10-29T23:52:24.000Z",
+    "__v": 0
   }
 ]

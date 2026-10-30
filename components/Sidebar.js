@@ -364,7 +364,7 @@ export default function Sidebar({
             initial="initial"
             animate="animate"
             exit="exit"
-            className="flex-1 overflow-hidden"
+            className="flex-1 flex flex-col min-h-0"
           >
             <ParticipantList
               participants={participants}

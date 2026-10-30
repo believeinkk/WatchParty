@@ -220,115 +220,152 @@ export default function Home() {
     }
   };
 
+  // Framer Motion staggered entry variants for Hero section
+  const heroContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.12,
+        delayChildren: 0.05,
+      },
+    },
+  };
+
+  const heroItemVariants = {
+    hidden: { opacity: 0, y: 22 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: 'spring', damping: 25, stiffness: 240 },
+    },
+  };
+
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col selection:bg-red-600 selection:text-white transition-colors duration-200 overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-zinc-50 to-slate-200 dark:from-gray-950 dark:via-[#160c2b] dark:to-black text-zinc-900 dark:text-zinc-100 flex flex-col selection:bg-red-600 selection:text-white transition-colors duration-300 overflow-x-hidden relative">
+      {/* ==================== PREMIUM ANIMATED AMBIENT BACKGROUND ==================== */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        {/* Floating Glowing Orb 1: Purple / Violet / Indigo */}
+        <motion.div
+          animate={{
+            x: [0, 60, -30, 0],
+            y: [0, -50, 30, 0],
+            scale: [1, 1.2, 0.95, 1],
+            opacity: [0.35, 0.55, 0.35],
+          }}
+          transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute -top-24 -left-24 w-[600px] h-[600px] bg-gradient-to-tr from-purple-700/35 via-indigo-600/30 to-pink-600/25 rounded-full blur-[140px]"
+        />
+
+        {/* Floating Glowing Orb 2: Red / Rose / Amber */}
+        <motion.div
+          animate={{
+            x: [0, -50, 40, 0],
+            y: [0, 60, -30, 0],
+            scale: [1, 1.15, 1.25, 1],
+            opacity: [0.25, 0.45, 0.25],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute top-1/4 -right-24 w-[650px] h-[650px] bg-gradient-to-bl from-red-600/35 via-rose-600/25 to-amber-500/20 rounded-full blur-[150px]"
+        />
+
+        {/* Floating Glowing Orb 3: Center Ambient Depth */}
+        <motion.div
+          animate={{
+            scale: [1, 1.25, 1],
+            opacity: [0.15, 0.3, 0.15],
+          }}
+          transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[500px] bg-gradient-to-r from-purple-900/25 via-rose-900/20 to-transparent rounded-full blur-[160px]"
+        />
+
+        {/* Subtle Cyber Grid Texture */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800e_1px,transparent_1px),linear-gradient(to_bottom,#8080800e_1px,transparent_1px)] bg-[size:36px_36px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-70" />
+      </div>
+
       <Navbar />
 
       <main className="flex-1">
         {/* ==================== HERO SECTION ==================== */}
         <section className="relative px-4 sm:px-6 pt-12 sm:pt-20 pb-20 sm:pb-28 overflow-hidden border-b border-zinc-200/80 dark:border-zinc-800/70">
           
-          {/* Animated Ambient Light Orbs */}
-          <motion.div
-            animate={{
-              scale: [1, 1.15, 1],
-              opacity: [0.12, 0.22, 0.12],
-              y: [0, -30, 0],
-            }}
-            transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute top-10 left-1/2 -translate-x-1/2 w-[650px] h-[650px] bg-gradient-to-tr from-red-600 via-rose-500 to-amber-500 blur-[150px] pointer-events-none rounded-full -z-10"
-          />
-          <motion.div
-            animate={{
-              scale: [1, 1.25, 1],
-              opacity: [0.08, 0.16, 0.08],
-              x: [0, 40, 0],
-            }}
-            transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute bottom-10 right-5 w-[400px] h-[400px] bg-amber-500 blur-[140px] pointer-events-none rounded-full -z-10"
-          />
-
           <div className="max-w-6xl mx-auto relative z-10">
-            {/* Hero Header */}
-            <div className="text-center max-w-3xl mx-auto">
+            {/* Hero Header with Framer-Motion Stagger Container */}
+            <motion.div
+              variants={heroContainerVariants}
+              initial="hidden"
+              animate="visible"
+              className="text-center max-w-4xl mx-auto"
+            >
               
               {/* Real-time Status Badge */}
               <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800/80 text-xs text-zinc-600 dark:text-zinc-300 mb-6 shadow-sm backdrop-blur-md"
+                variants={heroItemVariants}
+                className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/90 dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-purple-500/25 text-xs text-zinc-700 dark:text-zinc-200 mb-6 shadow-xl shadow-purple-950/20 backdrop-blur-xl"
               >
-                <span className="relative flex h-2 w-2">
+                <span className="relative flex h-2.5 w-2.5">
                   <span
                     className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
                       socketConnected ? 'bg-emerald-400' : 'bg-amber-400'
                     }`}
                   />
                   <span
-                    className={`relative inline-flex rounded-full h-2 w-2 ${
+                    className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
                       socketConnected ? 'bg-emerald-500' : 'bg-amber-500'
                     }`}
                   />
                 </span>
-                <span className="font-semibold text-zinc-800 dark:text-zinc-200">
-                  {socketConnected ? 'Sync Engine Live' : 'Connecting Engine...'}
+                <span className="font-bold tracking-wide">
+                  {socketConnected ? 'Real-Time Sync Engine Live' : 'Connecting to Cloud Engine...'}
                 </span>
                 <span className="text-zinc-300 dark:text-zinc-700">•</span>
-                <span className="text-zinc-500 dark:text-zinc-400 font-mono text-[11px]">
+                <span className="text-emerald-500 font-mono text-[11px] font-bold">
                   &lt;50ms Latency
                 </span>
               </motion.div>
 
               {/* Main Headline */}
               <motion.h1
-                initial={{ opacity: 0, y: 22 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-zinc-900 dark:text-white mb-6 leading-[1.12]"
+                variants={heroItemVariants}
+                className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-zinc-900 dark:text-white mb-6 leading-[1.08]"
               >
                 Watch YouTube together, <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-rose-500 to-amber-500 dark:from-red-500 dark:via-rose-400 dark:to-amber-400">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-rose-400 to-amber-300 drop-shadow-[0_4px_30px_rgba(239,68,68,0.35)]">
                   flawlessly synchronized.
                 </span>
               </motion.h1>
 
               {/* Subtitle */}
               <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-sm sm:text-base lg:text-lg text-zinc-600 dark:text-zinc-400 mb-8 max-w-2xl mx-auto leading-relaxed"
+                variants={heroItemVariants}
+                className="text-sm sm:text-base md:text-lg lg:text-xl text-zinc-600 dark:text-zinc-300/90 mb-8 max-w-2xl mx-auto leading-relaxed font-normal"
               >
-                Zero-drift audio sync, multi-tier RBAC moderation, and waiting room lobby admissions.
-                Auto-generate persistent rooms in one click or join any stream seamlessly.
+                Sub-second video & audio sync, multi-tier RBAC moderation, and live waiting room admissions. Experience synchronized cinema directly in your browser with zero extensions.
               </motion.p>
 
               {/* Quick Feature Pills */}
               <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.25 }}
-                className="flex flex-wrap items-center justify-center gap-2 mb-10 text-xs font-semibold"
+                variants={heroItemVariants}
+                className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 mb-10 text-xs font-semibold"
               >
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800/80 text-zinc-700 dark:text-zinc-300 shadow-xs">
+                <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/90 dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800/80 text-zinc-800 dark:text-zinc-200 shadow-sm backdrop-blur-md">
                   <Zap className="w-3.5 h-3.5 text-amber-500" />
                   <span>Sub-Second Sync</span>
                 </div>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800/80 text-zinc-700 dark:text-zinc-300 shadow-xs">
+                <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/90 dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800/80 text-zinc-800 dark:text-zinc-200 shadow-sm backdrop-blur-md">
                   <Shield className="w-3.5 h-3.5 text-blue-500" />
                   <span>Admin Moderation</span>
                 </div>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800/80 text-zinc-700 dark:text-zinc-300 shadow-xs">
+                <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/90 dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800/80 text-zinc-800 dark:text-zinc-200 shadow-sm backdrop-blur-md">
                   <Sliders className="w-3.5 h-3.5 text-emerald-500" />
                   <span>Lobby Waiting Room</span>
                 </div>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800/80 text-zinc-700 dark:text-zinc-300 shadow-xs">
+                <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/90 dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800/80 text-zinc-800 dark:text-zinc-200 shadow-sm backdrop-blur-md">
                   <Share2 className="w-3.5 h-3.5 text-rose-500" />
                   <span>1-Click Share Link</span>
                 </div>
               </motion.div>
-            </div>
+            </motion.div>
 
             {/* Termination Notice Banner */}
             <AnimatePresence>

@@ -35,6 +35,7 @@ import Sidebar from '@/components/Sidebar';
 import ShareLink from '@/components/ShareLink';
 import WaitingRoom from '@/components/WaitingRoom';
 import ThemeToggle from '@/components/ThemeToggle';
+import PreJoinLobby from '@/components/PreJoinLobby';
 import {
   AdminJoinToast,
   AutoJoinToggle,
@@ -51,6 +52,9 @@ function RoomContent() {
 
   const roomId = params?.roomId;
 
+  // Pre-Join Lobby state (Google Meet style pre-join screen)
+  const [isJoined, setIsJoined] = useState(false);
+
   // User state
   const [userId, setUserId] = useState('');
   const [username, setUsername] = useState('');
@@ -59,6 +63,7 @@ function RoomContent() {
   // Modular Layout state (Google Meet-style collapsible sidebar)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [sidebarTab, setSidebarTab] = useState('chat'); // 'chat' | 'participants'
+  const [isMobileParticipantsOpen, setIsMobileParticipantsOpen] = useState(false);
 
   // Phase 3: Lobby & Waiting Room State for Viewers
   const [lobbyStatus, setLobbyStatus] = useState('admitted'); // 'admitted' | 'waiting' | 'rejected'
@@ -94,6 +99,16 @@ function RoomContent() {
   const [pendingVideoRequest, setPendingVideoRequest] = useState(null);
 
   const socketRef = useRef(null);
+  const userIdRef = useRef(userId);
+  const usernameRef = useRef(username);
+
+  useEffect(() => {
+    userIdRef.current = userId;
+  }, [userId]);
+
+  useEffect(() => {
+    usernameRef.current = username;
+  }, [username]);
 
   const showNotification = (message, type = 'info') => {
     setNotification({ message, type });
@@ -122,9 +137,9 @@ function RoomContent() {
     }
   }, [searchParams, session]);
 
-  // Connect socket and join room once username and userId are ready
+  // Connect socket and join room once user joins from pre-join lobby
   useEffect(() => {
-    if (!roomId || !userId || !username) return;
+    if (!isJoined || !roomId || !userId || !username) return;
 
     const socket = getSocket();
     socketRef.current = socket;
@@ -144,6 +159,13 @@ function RoomContent() {
     const onRoomJoined = (data) => {
       setLobbyStatus('admitted');
       const assignedRole = data?.user?.role || 'Participant';
+      if (data?.user?.userId) {
+        setUserId(data.user.userId);
+        userIdRef.current = data.user.userId;
+        try {
+          localStorage.setItem('watchparty_userId', data.user.userId);
+        } catch (e) {}
+      }
       if (data?.user?.role) {
         setUserRole(data.user.role);
       }
@@ -254,9 +276,35 @@ function RoomContent() {
       }
     };
 
-    // 4. Participant List Update
+    // 4. Participant List Update & Cross-verification of local role
     const onParticipantList = (list) => {
-      setParticipants(list);
+      if (Array.isArray(list)) {
+        setParticipants(list);
+        const currentSocketId = socket.id || socketRef.current?.id;
+        const currentUid = userIdRef.current || userId;
+        const currentUname = usernameRef.current || username;
+
+        const me = list.find(
+          (p) =>
+            (p.userId && p.userId === currentUid) ||
+            (p.socketId && p.socketId === currentSocketId) ||
+            (p.username && p.username === currentUname)
+        );
+
+        if (me && me.role) {
+          setUserRole(me.role);
+          try {
+            const raw = localStorage.getItem('watchparty_active_room');
+            if (raw) {
+              const parsed = JSON.parse(raw);
+              localStorage.setItem(
+                'watchparty_active_room',
+                JSON.stringify({ ...parsed, role: me.role })
+              );
+            }
+          } catch (e) {}
+        }
+      }
     };
 
     // 5. Video State Synchronization
@@ -326,8 +374,24 @@ function RoomContent() {
     };
 
     // 10. Role Updated (Promotion / Demotion)
-    const onRoleUpdated = ({ userId: targetId, newRole, updatedBy }) => {
-      if (targetId === userId) {
+    const onRoleUpdated = (payload) => {
+      const targetId = payload?.userId || payload?.targetUserId;
+      const targetSocketId = payload?.socketId;
+      const targetUsername = payload?.username;
+      const newRole = payload?.newRole || payload?.role;
+      const updatedBy = payload?.updatedBy || 'Admin';
+
+      const currentUid = userIdRef.current || userId;
+      const currentUname = usernameRef.current || username;
+      const currentSocketId = socket.id || socketRef.current?.id;
+
+      const isMe =
+        (targetId && targetId === currentUid) ||
+        (targetSocketId && targetSocketId === currentSocketId) ||
+        (targetUsername && targetUsername === currentUname);
+
+      if (isMe && newRole) {
+        console.log(`[Role Updated] Immediately updating local user role to '${newRole}'`);
         setUserRole(newRole);
         try {
           const raw = localStorage.getItem('watchparty_active_room');
@@ -420,11 +484,42 @@ function RoomContent() {
       const targetId = newAdminId || newHostId;
       const targetName = newAdminName || newHostName;
 
-      if (targetId === userId) {
+      const currentUid = userIdRef.current || userId;
+      const currentUname = usernameRef.current || username;
+
+      const isNewAdmin =
+        (targetId && targetId === currentUid) ||
+        (targetName && targetName === currentUname);
+
+      const isPrevAdmin =
+        (prevId && prevId === currentUid) ||
+        (prevName && prevName === currentUname);
+
+      if (isNewAdmin) {
         setUserRole('Admin');
+        try {
+          const raw = localStorage.getItem('watchparty_active_room');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            localStorage.setItem(
+              'watchparty_active_room',
+              JSON.stringify({ ...parsed, role: 'Admin' })
+            );
+          }
+        } catch (e) {}
         showNotification('You are now the Admin of the watch party!', 'success');
-      } else if (prevId === userId) {
+      } else if (isPrevAdmin) {
         setUserRole('Co-Admin');
+        try {
+          const raw = localStorage.getItem('watchparty_active_room');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            localStorage.setItem(
+              'watchparty_active_room',
+              JSON.stringify({ ...parsed, role: 'Co-Admin' })
+            );
+          }
+        } catch (e) {}
         showNotification(`You transferred the Admin role to ${targetName}.`, 'info');
       } else {
         showNotification(`${prevName} transferred the Admin role to ${targetName}.`, 'info');
@@ -492,7 +587,7 @@ function RoomContent() {
       socket.off('room_terminated', onRoomTerminated);
       socket.off('room_ended', onRoomTerminated);
     };
-  }, [roomId, userId, username, router]);
+  }, [isJoined, roomId, userId, username, router]);
 
   // Authority & Role helpers
   const canControl = ['admin', 'co-admin', 'mod', 'host', 'moderator'].includes(userRole?.toLowerCase());
@@ -637,10 +732,11 @@ function RoomContent() {
   };
 
   const handleLeaveRoom = () => {
-    socketRef.current?.emit('leave_room', { roomId });
+    socketRef.current?.emit('leave_room', { roomId, userId });
     try {
       localStorage.removeItem('watchparty_active_room');
     } catch (e) {}
+    setIsJoined(false);
     router.push('/');
   };
 
@@ -650,11 +746,44 @@ function RoomContent() {
       localStorage.removeItem('watchparty_active_room');
     } catch (e) {}
     setIsEndRoomModalOpen(false);
+    setIsJoined(false);
     showNotification('Terminating watch party for all participants...', 'info');
     setTimeout(() => {
       router.push('/?terminated=true');
     }, 800);
   };
+
+  // Pre-Join Lobby Join Handler
+  const handleJoinFromLobby = (chosenName) => {
+    const finalName = chosenName?.trim() || username || 'Guest';
+    setUsername(finalName);
+    try {
+      localStorage.setItem('watchparty_username', finalName);
+    } catch (e) {}
+    setIsJoined(true);
+  };
+
+  // Google Meet Style Pre-Join Lobby Screen
+  if (!isJoined) {
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div
+          key="pre-join-lobby-screen"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0, scale: 0.98 }}
+          transition={{ duration: 0.3 }}
+        >
+          <PreJoinLobby
+            roomId={roomId}
+            initialUsername={username}
+            session={session}
+            onJoin={handleJoinFromLobby}
+          />
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
 
   // Phase 3 Viewer Waiting / Rejected Screen View
   if (lobbyStatus === 'waiting' || lobbyStatus === 'rejected') {
@@ -664,7 +793,10 @@ function RoomContent() {
         username={username}
         status={lobbyStatus}
         rejectionReason={rejectionReason}
-        onReturnHome={() => router.push('/')}
+        onReturnHome={() => {
+          setIsJoined(false);
+          router.push('/');
+        }}
       />
     );
   }
@@ -686,7 +818,13 @@ function RoomContent() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col transition-colors duration-200">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.99 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+      className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col transition-colors duration-200"
+    >
       {/* Toast Notification */}
       <AnimatePresence>
         {notification && (
@@ -948,6 +1086,17 @@ function RoomContent() {
             </div>
 
             <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+              {/* Mobile-only Participants Toggle Button */}
+              <button
+                type="button"
+                onClick={() => setIsMobileParticipantsOpen(true)}
+                className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 text-xs font-semibold border border-zinc-200 dark:border-zinc-700/80 transition-colors shadow-xs cursor-pointer active:scale-95"
+                title="Manage Participants"
+              >
+                <Users className="w-3.5 h-3.5 text-red-500" />
+                <span>People ({participants.length})</span>
+              </button>
+
               <ReactionPicker onSendReaction={handleSendReaction} />
 
               {/* Theater / Fullscreen Width Toggle (Desktop) */}
@@ -1138,9 +1287,9 @@ function RoomContent() {
 
           <button
             type="button"
-            onClick={() => toggleSidebarTab('participants')}
+            onClick={() => setIsMobileParticipantsOpen(true)}
             className={`relative flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all cursor-pointer ${
-              isSidebarOpen && sidebarTab === 'participants'
+              isMobileParticipantsOpen
                 ? 'text-red-600 dark:text-red-400 font-bold'
                 : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
             }`}
@@ -1156,8 +1305,76 @@ function RoomContent() {
             <ReactionPicker onSendReaction={handleSendReaction} />
           </div>
         </div>
+
+        {/* Mobile Responsive Bottom Sheet for Participants (High z-index z-50 overlay) */}
+        <AnimatePresence>
+          {isMobileParticipantsOpen && (
+            <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end">
+              {/* Dimmed Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsMobileParticipantsOpen(false)}
+                className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+              />
+
+              {/* Slide-Up Bottom Sheet */}
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 28, stiffness: 280 }}
+                className="relative z-10 w-full max-h-[85vh] bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 rounded-t-3xl shadow-2xl flex flex-col overflow-hidden"
+              >
+                {/* Drag Handle */}
+                <div className="w-12 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700 mx-auto mt-3 mb-1" />
+
+                {/* Sheet Header */}
+                <div className="px-5 py-3 border-b border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between shrink-0">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500">
+                      <Users className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                        <span>Room Participants</span>
+                        <span className="px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-[10px] font-mono font-bold text-zinc-600 dark:text-zinc-400">
+                          {participants.length}
+                        </span>
+                      </h3>
+                      <p className="text-[11px] text-zinc-400">
+                        {isAdminRole ? 'Tap 3-dots to assign roles or remove viewers' : 'Live viewers in this room'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setIsMobileParticipantsOpen(false)}
+                    className="p-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors cursor-pointer"
+                    title="Close"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Sheet Content: Full Participant List with Touch Role Dropdown */}
+                <div className="flex-1 overflow-y-auto pb-8 pt-2">
+                  <ParticipantList
+                    participants={participants}
+                    currentUserId={userId}
+                    currentUserRole={userRole}
+                    onAssignRole={handleAssignRole}
+                    onRemoveParticipant={handleRemoveParticipant}
+                    onTransferHost={handleTransferAdmin}
+                  />
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
